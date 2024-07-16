@@ -71,7 +71,7 @@ pipeline {
 
         stage('Trivy Image Scanning') {
             steps {
-                sh "trivy image shrikesh1996/ekart:latest > trivy-report.html"
+                sh "trivy image --format table -o trivy-report.html shrikesh1996/ekart:latest "
             }
         }
 
@@ -93,6 +93,16 @@ pipeline {
                 }
             }
         }
+
+        emailext (
+                subject: "${jobName} - Build ${buildNumber} - ${pipelineStatus.toUpperCase()}",
+                body: body,
+                to: 'karmoreshrikesh0@gmail.com',
+                from: 'jenkins@example.com',
+                replyTo: 'jenkins@example.com',
+                mimeType: 'text/html',
+                attachmentsPattern: 'trivy-report.html'
+            )
 
     }
 }
